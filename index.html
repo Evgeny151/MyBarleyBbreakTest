@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios@0.19.0/dist/axios.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="index.css">
+    </head>
+    <body>
+        <div id="app">
+            <div class="flex">
+                <div class="new" v-on:click="newGame">NEW GAME</div>
+                <div class="mr">
+                    <p class="title">Ходов</p>
+                    <p class="value">{{ counter }}</p>
+                </div>
+                <div class="mr time">
+                    <p class="title">Время</p>
+                    <p class="value">{{timeVars.readout}}</p>
+                </div>
+            </div>
+            <div class="flex_table">
+                <table>
+                    <tr v-for="item in items">
+                        <td v-bind:x="i.x" v-bind:y="i.y" v-on:click="cellClick(i.x, i.y)" v-for="i in item" v-show="true">{{ i.value }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <script type="text/javascript">
+            let vm = new Vue({
+                el: '#app',
+                data: {
+                    items: [
+                        [{y: 1, x: 1, value: 1}, {y: 1, x: 2, value: 2}, {y: 1, x: 3, value: 3}, {y: 1, x: 4, value: 4}],
+                        [{y: 2, x: 1, value: 5}, {y: 2, x: 2, value: 6}, {y: 2, x: 3, value: 7}, {y: 2, x: 4, value: 8}],
+                        [{y: 3, x: 1, value: 9}, {y: 3, x: 2, value: 10}, {y: 3, x: 3, value: 11}, {y: 3, x: 4, value: 12}],
+                        [{y: 4, x: 1, value: 13}, {y: 4, x: 2, value: 14}, {y: 4, x: 3, value: 15}, {y: 4, x: 4, value: null}]
+                    ],
+                    coordEmptyCell: {
+                        x: 4,
+                        y: 4
+                    },
+                    counter: 0,
+                    timeVars: {
+                        readout: '00:00'
+                    },
+                    w: 4,
+                    h: 4,
+                    stopTime: false
+                },
+                methods: {
+                    startTime: function() {
+                        var s = 0
+                        var m = 0
+
+                        var setInt = setInterval(() => {
+                            s++
+                            if (s <= 9) {
+                                s = '0' + s
+                            } 
+                            if (s == 60) {
+                                s = '00'
+                                m++
+                                if (m <= 9) {
+                                    m = '0' + m
+                                }
+                            }
+                            if (m == 0) {
+                                m = '00'
+                            }
+                            this.timeVars.readout = m + ':' + s
+                        }, 1000)
+
+                        // if(this.stopTime == false) {
+                        //     s = 0
+                        //     m = 0
+                        //     this.readout = '00:00'
+                        //     clearInterval(setInt);
+                        // }
+
+                    },
+                    makeCell: function(x, y, value) {
+                        return {x, y, value}
+                    },
+                    makeRow: function(yCoord) {
+                        return new Array(this.w).fill(true).map((item, index) => {
+                            const xCoord = index + 1
+                            const value = xCoord + ((yCoord - 1) * this.h)
+
+                            return this.makeCell(xCoord, yCoord, value)
+                        })
+                    },
+                    // shakeLevel: function(level) {
+                    //     level.sort(() => Math.random() - 0.5);
+
+                    //     level.forEach((row) => row.sort(() => Math.random() - 0.5))
+
+                    //     level.map(item => {
+                    //         return item.map(i => {
+                    //             if (i.value == null) {
+                    //                 console.log(i.x, i.y)
+                    //             }
+                    //         })
+                    //     })
+
+                    //     this.items = level
+                    // },
+
+                    newGame: function() {
+                        // const area = new Array(this.h).fill(true);
+                        // const level = area.map((item, yCoord) => this.makeRow(yCoord + 1));
+                        // level.map(item => {
+                        //     return item.map(i => {
+                        //         if (i.value == 16) {
+                        //             i.value = null
+                        //         }
+                        //     })
+                        // })
+                        // // this.shakeLevel(level)
+                        // this.items = level
+                        // this.stopTime = !this.stopTime
+
+                        this.startTime()
+                    },
+                    validateClick: function(x, y) {
+                        return (x === this.coordEmptyCell.x && Math.abs(y - this.coordEmptyCell.y) === 1) || ((y === this.coordEmptyCell.y && Math.abs(x - this.coordEmptyCell.x) === 1))
+                    },
+                    getEmptyCell: function(x, y) {
+                        for(let rowIndex = 0; rowIndex < this.items.length; rowIndex++) {
+                            const foundedEmptyCell = this.items[rowIndex].find((item) => { 
+                                return item.x == this.coordEmptyCell.x && item.y == this.coordEmptyCell.y
+                            });
+
+                            if (foundedEmptyCell) {
+                                return foundedEmptyCell
+                            }
+                        }
+
+                        throw new Error('Не найдена пустая ячейка');
+                    },
+                    saveCoordEmptyCell: function(x, y) {
+                        this.coordEmptyCell.x = x;
+                        this.coordEmptyCell.y = y;
+                    },
+                    saveCell: function(cell, {value}) {
+                        cell.value = value;
+                    },
+                    cellClick: function(x, y) {
+                        if (this.validateClick(x, y)) {
+                            const {saveCoordEmptyCell, getEmptyCell, saveCell} = this
+
+                            const emptyCell = getEmptyCell(x, y);
+
+                            this.items = this.items.map((row) => {
+                                return row.map((cell) => {
+                                    if (cell.x === x && cell.y === y) {
+                                        const cellValue = cell.value
+
+                                        saveCell(cell, emptyCell);
+                                        saveCell(emptyCell, {value: cellValue});
+
+                                        saveCoordEmptyCell(x, y)
+                                    }
+
+                                    return cell;
+                                })
+                            })
+                            this.counter++
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
