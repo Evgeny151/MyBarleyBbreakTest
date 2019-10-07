@@ -24,7 +24,7 @@
             <div class="flex_table">
                 <table>
                     <tr v-for="item in items">
-                        <td v-bind:x="i.x" v-bind:y="i.y" v-on:click="cellClick(i.x, i.y)" v-for="i in item" v-show="true">{{ i.value }}</td>
+                        <td v-bind:x="i.x" v-bind:y="i.y" v-on:click="cellClick(i.x, i.y)" v-for="i in item">{{ i.value }}</td>
                     </tr>
                 </table>
             </div>
@@ -52,47 +52,39 @@
                     stopTime: false
                 },
                 methods: {
-                    startTime: function() {
-                        var s = 0
-                        var m = 0
+                    // startTime: function() {
+                    //     var s = 0
+                    //     var m = 0
 
-                        var setInt = setInterval(() => {
-                            s++
-                            if (s <= 9) {
-                                s = '0' + s
-                            } 
-                            if (s == 60) {
-                                s = '00'
-                                m++
-                                if (m <= 9) {
-                                    m = '0' + m
-                                }
-                            }
-                            if (m == 0) {
-                                m = '00'
-                            }
-                            this.timeVars.readout = m + ':' + s
-                        }, 1000)
+                    //     var setInt = setInterval(() => {
+                    //         s++
+                    //         if (s <= 9) {
+                    //             s = '0' + s
+                    //         } 
+                    //         if (s == 60) {
+                    //             s = '00'
+                    //             m++
+                    //             if (m <= 9) {
+                    //                 m = '0' + m
+                    //             }
+                    //         }
+                    //         if (m == 0) {
+                    //             m = '00'
+                    //         }
+                    //         this.timeVars.readout = m + ':' + s
+                    //     }, 1000)
+                    // },
+                    // makeCell: function(x, y, value) {
+                    //     return {x, y, value}
+                    // },
+                    // makeRow: function(yCoord) {
+                    //     return new Array(this.w).fill(true).map((item, index) => {
+                    //         const xCoord = index + 1
+                    //         const value = xCoord + ((yCoord - 1) * this.h)
 
-                        // if(this.stopTime == false) {
-                        //     s = 0
-                        //     m = 0
-                        //     this.readout = '00:00'
-                        //     clearInterval(setInt);
-                        // }
-
-                    },
-                    makeCell: function(x, y, value) {
-                        return {x, y, value}
-                    },
-                    makeRow: function(yCoord) {
-                        return new Array(this.w).fill(true).map((item, index) => {
-                            const xCoord = index + 1
-                            const value = xCoord + ((yCoord - 1) * this.h)
-
-                            return this.makeCell(xCoord, yCoord, value)
-                        })
-                    },
+                    //         return this.makeCell(xCoord, yCoord, value)
+                    //     })
+                    // },
                     // shakeLevel: function(level) {
                     //     level.sort(() => Math.random() - 0.5);
 
@@ -119,11 +111,10 @@
                         //         }
                         //     })
                         // })
-                        // // this.shakeLevel(level)
+                        // this.shakeLevel(level)
                         // this.items = level
-                        // this.stopTime = !this.stopTime
 
-                        this.startTime()
+                        // this.startTime()
                     },
                     validateClick: function(x, y) {
                         return (x === this.coordEmptyCell.x && Math.abs(y - this.coordEmptyCell.y) === 1) || ((y === this.coordEmptyCell.y && Math.abs(x - this.coordEmptyCell.x) === 1))
