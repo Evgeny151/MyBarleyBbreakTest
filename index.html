@@ -24,7 +24,7 @@
             <div class="flex_table">
                 <table>
                     <tr v-for="item in items">
-                        <td v-bind:x="i.x" v-bind:y="i.y" v-on:click="cellClick(i.x, i.y)" v-for="i in item">{{ i.value }}</td>
+                        <td v-bind:x="i.x" v-bind:y="i.y" v-on:click="cellClick(i.id)" v-for="i in item">{{ i.value }}</td>
                     </tr>
                 </table>
             </div>
@@ -52,68 +52,124 @@
                     stopTime: false
                 },
                 methods: {
-                    // startTime: function() {
-                    //     var s = 0
-                    //     var m = 0
+                    startTime: function() {
+                        var s = 0
+                        var m = 0
 
-                    //     var setInt = setInterval(() => {
-                    //         s++
-                    //         if (s <= 9) {
-                    //             s = '0' + s
-                    //         } 
-                    //         if (s == 60) {
-                    //             s = '00'
-                    //             m++
-                    //             if (m <= 9) {
-                    //                 m = '0' + m
-                    //             }
-                    //         }
-                    //         if (m == 0) {
-                    //             m = '00'
-                    //         }
-                    //         this.timeVars.readout = m + ':' + s
-                    //     }, 1000)
-                    // },
-                    // makeCell: function(x, y, value) {
-                    //     return {x, y, value}
-                    // },
-                    // makeRow: function(yCoord) {
-                    //     return new Array(this.w).fill(true).map((item, index) => {
-                    //         const xCoord = index + 1
-                    //         const value = xCoord + ((yCoord - 1) * this.h)
+                        var setInt = setInterval(() => {
+                            s++
+                            if (s <= 9) {
+                                s = '0' + s
+                            } 
+                            if (s == 60) {
+                                s = '00'
+                                m++
+                                if (m <= 9) {
+                                    m = '0' + m
+                                }
+                            }
+                            if (m == 0) {
+                                m = '00'
+                            }
+                            this.timeVars.readout = m + ':' + s
+                        }, 1000)
+                    },
+                    makeCell: function(x, y, value) {
+                        return {x, y, value}
+                    },
+                    makeRow: function(yCoord) {
+                        return new Array(this.w).fill(true).map((item, index) => {
+                            const xCoord = index + 1
+                            const value = xCoord + ((yCoord - 1) * this.h)
 
-                    //         return this.makeCell(xCoord, yCoord, value)
-                    //     })
-                    // },
-                    // shakeLevel: function(level) {
-                    //     level.sort(() => Math.random() - 0.5);
+                            return this.makeCell(xCoord, yCoord, value)
+                        })
+                    },
+                    shakeLevel: function(items) {
+                        items.sort(() => Math.random() - 0.5);
 
-                    //     level.forEach((row) => row.sort(() => Math.random() - 0.5))
+                        items.forEach((row) => row.sort(() => Math.random() - 0.5))
+                    },
+                    addId: function(id) {
+                        if (id == 11) {
+                            this.items.map(item => {
+                                while(this.items.indexOf(item) == 0) {
+                                    return item.map(i => {
+                                        i.id = '' + id 
+                                        id++
+                                    })
+                                }
+                            })
+                        }
 
-                    //     level.map(item => {
-                    //         return item.map(i => {
-                    //             if (i.value == null) {
-                    //                 console.log(i.x, i.y)
-                    //             }
-                    //         })
-                    //     })
+                        if (id == 21) {
+                            this.items.map(item => {
+                                while(this.items.indexOf(item) == 1) {
+                                    return item.map(i => {
+                                        i.id = '' + id 
+                                        id++
+                                    })
+                                }
+                            })
+                        }
 
-                    //     this.items = level
-                    // },
+                        if (id == 31) {
+                            this.items.map(item => {
+                                while(this.items.indexOf(item) == 2) {
+                                    return item.map(i => {
+                                        i.id = '' + id 
+                                        id++
+                                    })
+                                }
+                            })
+                        }
 
+                        if (id == 41) {
+                            this.items.map(item => {
+                                while(this.items.indexOf(item) == 3) {
+                                    return item.map(i => {
+                                        i.id = '' + id 
+                                        id++
+                                    })
+                                }
+                            })
+                        }
+                    },
+                    saveCoordEmptyCellById: function (id) {
+                        let idY = parseInt(id.charAt(0))
+                        let idX = parseInt(id.charAt(1))
+
+                        this.coordEmptyCell.y = idY
+                        this.coordEmptyCell.x = idX
+                    },
                     newGame: function() {
-                        // const area = new Array(this.h).fill(true);
-                        // const level = area.map((item, yCoord) => this.makeRow(yCoord + 1));
-                        // level.map(item => {
-                        //     return item.map(i => {
-                        //         if (i.value == 16) {
-                        //             i.value = null
-                        //         }
-                        //     })
-                        // })
-                        // this.shakeLevel(level)
-                        // this.items = level
+                        const area = new Array(this.h).fill(true);
+                        const level = area.map((item, yCoord) => this.makeRow(yCoord + 1));
+                        level.map(item => {
+                            return item.map(i => {
+                                if (i.value == 16) {
+                                    i.value = null
+                                }
+                            })
+                        })
 
+                        this.shakeLevel(level)
+
+                        this.items = level
+
+                        this.addId(11)
+                        this.addId(21)
+                        this.addId(31)
+                        this.addId(41)
+
+                        this.items.map(item => {
+                            return item.map(i => {
+                                if (i.value == null) {
+                                    this.saveCoordEmptyCellById(i.id)
+                                }
+                            })
+                        })
+                        this.counter = 0
                         // this.startTime()
                     },
                     validateClick: function(x, y) {
@@ -122,7 +178,7 @@
                     getEmptyCell: function(x, y) {
                         for(let rowIndex = 0; rowIndex < this.items.length; rowIndex++) {
                             const foundedEmptyCell = this.items[rowIndex].find((item) => { 
-                                return item.x == this.coordEmptyCell.x && item.y == this.coordEmptyCell.y
+                                return parseInt(item.id.charAt(1)) == this.coordEmptyCell.x && parseInt(item.id.charAt(0)) == this.coordEmptyCell.y
                             });
 
                             if (foundedEmptyCell) {
@@ -132,28 +188,26 @@
 
                         throw new Error('Не найдена пустая ячейка');
                     },
-                    saveCoordEmptyCell: function(x, y) {
-                        this.coordEmptyCell.x = x;
-                        this.coordEmptyCell.y = y;
-                    },
                     saveCell: function(cell, {value}) {
                         cell.value = value;
                     },
-                    cellClick: function(x, y) {
+                    cellClick: function(id) {
+                        let y = parseInt(id.charAt(0))
+                        let x = parseInt(id.charAt(1))
+
                         if (this.validateClick(x, y)) {
-                            const {saveCoordEmptyCell, getEmptyCell, saveCell} = this
+                            const {saveCoordEmptyCellById, getEmptyCell, saveCell} = this
 
                             const emptyCell = getEmptyCell(x, y);
 
                             this.items = this.items.map((row) => {
                                 return row.map((cell) => {
-                                    if (cell.x === x && cell.y === y) {
+                                    if (cell.id == id) {
                                         const cellValue = cell.value
-
                                         saveCell(cell, emptyCell);
                                         saveCell(emptyCell, {value: cellValue});
 
-                                        saveCoordEmptyCell(x, y)
+                                        saveCoordEmptyCellById(id)
                                     }
 
                                     return cell;
